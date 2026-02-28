@@ -1,0 +1,143 @@
+﻿@inherits MvvmComponentBase<RecipeDialogViewModel>
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @bind-IsValid="@ViewModel.IsValid">
+            <div style="position: relative;">
+                <MudOverlay Visible="ViewModel.IsLoading" DarkBackground="true" Absolute="true">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                </MudOverlay>
+
+                <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true">
+                    <MudTabPanel Text="General Info">
+                        <MudTextField @bind-Value="ViewModel.Recipe.Title"
+                                      Label="Title"
+                                      Variant="Variant.Outlined"
+                                      For="@(() => ViewModel.Recipe.Title)"
+                                      Counter="100" MaxLength="100"/>
+
+                        <MudTextField @bind-Value="ViewModel.Recipe.Description"
+                                      Variant="Variant.Outlined"
+                                      Label="Description" Lines="2"/>
+
+                        <MudTextField @bind-Value="ViewModel.Recipe.Instructions"
+                                      Label="Instructions"
+                                      Variant="Variant.Outlined"
+                                      For="@(() => ViewModel.Recipe.Instructions)"
+                                      Lines="10"/>
+
+                        <MudText Typo="Typo.body1" Color="Color.Default">Image</MudText>
+                        @if (ViewModel.Recipe.Image != null)
+                        {
+                            <MudImage Src="@($"data:image/png;base64,{Convert.ToBase64String(ViewModel.Recipe.Image)}")" Fluid="true" ObjectFit="ObjectFit.Cover" Alt="Recipe Image" Class="rounded"/>
+                        }
+                        <MudStack Row="true">
+                            <MudFileUpload T="IBrowserFile" FilesChanged="ViewModel.UploadImageCommand.ExecuteAsync" Accept=".jpg,.bmp,.tiff,.jpeg,.png" DragAndDrop="false"/>
+                            @if (ViewModel.Recipe.Image != null)
+                            {
+                                <MudButton Color="Color.Error"
+                                           Variant="Variant.Filled"
+                                           Size="Size.Small"
+                                           StartIcon="@Icons.Material.Filled.Delete"
+                                           OnClick="@(() => ViewModel.Recipe.Image = null)">
+                                    Clear Image
+                                </MudButton>
+                            }
+                        </MudStack>
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Ingredients">
+                        <MudTable Items="@ViewModel.Recipe.Ingredients"
+                                  Hover="true"
+                                  Outlined="true"
+                                  CanCancelEdit="true"
+                                  CommitEditIcon="@Icons.Material.Filled.Check"
+                                  EditTrigger="TableEditTrigger.RowClick">
+                            <ToolBarContent>
+                                <MudButton OnClick="ViewModel.AddIngredientCommand.Execute"
+                                           StartIcon="@Icons.Material.Filled.Add"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary">
+                                    Add Ingredient
+                                </MudButton>
+                            </ToolBarContent>
+                            <ColGroup>
+                                <col/>
+                                <col style="width: 120px;"/>
+                                <col style="width: 150px;"/>
+                                <col style="width: 50px;"/>
+                            </ColGroup>
+                            <HeaderContent>
+                                <MudTh>Name</MudTh>
+                                <MudTh>Quantity</MudTh>
+                                <MudTh>Type</MudTh>
+                                <MudTh/>
+                            </HeaderContent>
+                            <RowTemplate Context="ing">
+                                <MudTd>@ing.Name</MudTd>
+                                <MudTd>
+                                    @(ing.QuantityType switch
+                                    {
+                                        QuantityType.Weight => $"{ing.Quantity} grams",
+                                        QuantityType.Volume => $"{ing.Quantity} ml",
+                                        _ => ing.Quantity.ToString(CultureInfo.InvariantCulture)
+                                    })
+                                </MudTd>
+                                <MudTd>@ing.QuantityType.ToString()</MudTd>
+                                <MudTd>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Color="Color.Error"
+                                                   Variant="Variant.Filled"
+                                                   OnClick="@(() => ViewModel.RemoveIngredientCommand.Execute(ing))"/>
+                                </MudTd>
+                            </RowTemplate>
+
+                            <RowEditingTemplate Context="ing">
+                                <MudTd Style="vertical-align: top;">
+                                    <MudTextField @bind-Value="ing.Name"
+                                                  Required="true"
+                                                  AutoFocus="true"
+                                                  Variant="Variant.Outlined"
+                                                  For="@(() => ing.Name)"/>
+                                </MudTd>
+                                <MudTd Style="vertical-align: top;">
+                                    <MudNumericField @bind-Value="ing.Quantity"
+                                                     Variant="Variant.Outlined"
+                                                     Required="true"
+                                                     For="@(() => ing.Quantity)"/>
+                                </MudTd>
+                                <MudTd Style="vertical-align: top;">
+                                    <MudSelect @bind-Value="ing.QuantityType"
+                                               Variant="Variant.Outlined"
+                                               Required="true"
+                                               For="@(() => ing.QuantityType)">
+                                        @foreach (var type in Enum.GetValues<QuantityType>())
+                                        {
+                                            <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudTd>
+                                <MudTd/>
+                            </RowEditingTemplate>
+                            <EditButtonContent Context="button">
+                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled"/>
+                            </EditButtonContent>
+                        </MudTable>
+                    </MudTabPanel>
+                </MudTabs>
+            </div>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="ViewModel.CancelCommand.Execute"
+                   Disabled="ViewModel.IsLoading">
+            Cancel
+        </MudButton>
+        <MudButton Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   OnClick="ViewModel.SaveCommand.Execute"
+                   Disabled="ViewModel.IsLoading">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>

@@ -1,0 +1,50 @@
+﻿@page "/"
+@inherits MvvmComponentBase<HomeViewModel>
+
+<MudOverlay LightBackground="true" Visible="@(ViewModel.IsLoading)">
+    <MudStack AlignItems="AlignItems.Center">
+        <MudText Class="text-lg text-center" Color="Color.Primary">Loading...</MudText>
+        <MudProgressCircular Class="d-flex justify-center" Color="Color.Primary" Indeterminate="true"/>
+    </MudStack>
+</MudOverlay>
+<MudTable Elevation="1" Outlined="true" T="Recipe" Hover="true" @bind-SelectedItem="@ViewModel.SelectedRecipe" AllowUnsorted="false" FixedHeader="true" Items="@ViewModel.Recipes" Filter="new Func<Recipe, bool>(ViewModel.FilterFunc)" RowClassFunc="@ViewModel.SelectedRowClassFunc">
+    <ToolBarContent>
+        <MudButton Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   Class="mr-2"
+                   OnClick="@ViewModel.AddRecipeCommand.Execute">
+            Add
+        </MudButton>
+        <MudButton Color="Color.Primary"
+                   Variant="Variant.Outlined"
+                   OnClick="@ViewModel.EditRecipeCommand.Execute"
+                   Disabled="@(ViewModel.SelectedRecipe == null)">
+            Edit
+        </MudButton>
+        <MudSpacer/>
+        <MudTextField @bind-Value="@ViewModel.SearchString" Placeholder="Search" Adornment="Adornment.Start" Variant="Variant.Outlined" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col/>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Recipe, object>(x => x.Title)">
+                Recipe
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>
+            <MudStack Row="true">
+                <MudAvatar Size="Size.Large" Square="true" Variant="Variant.Filled">
+                    <MudImage Src="@context.ImageDataUrl" Alt="Recipe Image" ObjectFit="ObjectFit.Contain"/>
+                </MudAvatar>
+                <MudStack Justify="Justify.Center" Spacing="0">
+                    <MudText Typo="Typo.h5">@context.Title</MudText>
+                    <MudText Typo="Typo.body2">@context.Description</MudText>
+                </MudStack>
+            </MudStack>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
