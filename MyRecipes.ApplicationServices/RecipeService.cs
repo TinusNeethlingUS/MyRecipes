@@ -92,13 +92,44 @@ public class RecipeService : IRecipeService
                     }
                     else
                     {
-                        context.Ingredients.Add(incomingIngredient);
+                        existingRecipe.Ingredients.Add(new Ingredient
+                        {
+                            Name = incomingIngredient.Name,
+                            Quantity = incomingIngredient.Quantity,
+                            QuantityType = incomingIngredient.QuantityType
+                        });
                     }
                 }
             }
 
             await context.SaveChangesAsync();
             return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+
+        return false;
+    }
+
+    public async Task<bool> DeleteRecipeAsync(Guid recipeId)
+    {
+        try
+        {
+            _logger.LogInformation("Deleting recipe");
+            await using var context = await _dbContextFactory.CreateDbContextAsync();
+            var recipe = await context.Recipes
+                .Include(r => r.Ingredients)
+                .Where(x => x.Id == recipeId)
+                .FirstOrDefaultAsync();
+
+            if (recipe != null)
+            {
+                context.Recipes.Remove(recipe);
+                await context.SaveChangesAsync();
+                return true;
+            }
         }
         catch (Exception ex)
         {

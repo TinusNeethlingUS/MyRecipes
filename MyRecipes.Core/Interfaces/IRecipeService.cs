@@ -9,4 +9,6 @@ public interface IRecipeService
     Task<Recipe?> GetRecipeByIdAsync(Guid recipeId);
 
     Task<bool> AddOrUpdateRecipeAsync(Recipe recipe);
+
+    Task<bool> DeleteRecipeAsync(Guid recipeId);
 }

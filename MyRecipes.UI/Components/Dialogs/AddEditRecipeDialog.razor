@@ -29,7 +29,7 @@
                         <MudText Typo="Typo.body1" Color="Color.Default">Image</MudText>
                         @if (ViewModel.Recipe.Image != null)
                         {
-                            <MudImage Src="@($"data:image/png;base64,{Convert.ToBase64String(ViewModel.Recipe.Image)}")" Fluid="true" ObjectFit="ObjectFit.Cover" Alt="Recipe Image" Class="rounded"/>
+                            <MudImage Src="@($"data:image/png;base64,{Convert.ToBase64String(ViewModel.Recipe.Image)}")" Fluid="true" ObjectFit="ObjectFit.Cover" Alt="Recipe Image" Class="rounded" Style="max-height: 500px;"/>
                         }
                         <MudStack Row="true">
                             <MudFileUpload T="IBrowserFile" FilesChanged="ViewModel.UploadImageCommand.ExecuteAsync" Accept=".jpg,.bmp,.tiff,.jpeg,.png" DragAndDrop="false"/>
@@ -76,12 +76,7 @@
                             <RowTemplate Context="ing">
                                 <MudTd>@ing.Name</MudTd>
                                 <MudTd>
-                                    @(ing.QuantityType switch
-                                    {
-                                        QuantityType.Weight => $"{ing.Quantity} grams",
-                                        QuantityType.Volume => $"{ing.Quantity} ml",
-                                        _ => ing.Quantity.ToString(CultureInfo.InvariantCulture)
-                                    })
+                                    @ing.Quantity.ToString(CultureInfo.InvariantCulture)
                                 </MudTd>
                                 <MudTd>@ing.QuantityType.ToString()</MudTd>
                                 <MudTd>
@@ -136,7 +131,7 @@
         <MudButton Color="Color.Primary"
                    Variant="Variant.Filled"
                    OnClick="ViewModel.SaveCommand.Execute"
-                   Disabled="ViewModel.IsLoading">
+                   Disabled="@(ViewModel.IsLoading || !ViewModel.IsValid)">
             Save
         </MudButton>
     </DialogActions>

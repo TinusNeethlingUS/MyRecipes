@@ -17,9 +17,16 @@
         </MudButton>
         <MudButton Color="Color.Primary"
                    Variant="Variant.Outlined"
+                   Class="mr-2"
                    OnClick="@ViewModel.EditRecipeCommand.Execute"
                    Disabled="@(ViewModel.SelectedRecipe == null)">
             Edit
+        </MudButton>
+        <MudButton Color="Color.Error"
+                   Variant="Variant.Filled"
+                   OnClick="@ViewModel.DeleteRecipeCommand.Execute"
+                   Disabled="@(ViewModel.SelectedRecipe == null)">
+            Delete
         </MudButton>
         <MudSpacer/>
         <MudTextField @bind-Value="@ViewModel.SearchString" Placeholder="Search" Adornment="Adornment.Start" Variant="Variant.Outlined" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
@@ -41,7 +48,9 @@
                     <MudImage Src="@context.ImageDataUrl" Alt="Recipe Image" ObjectFit="ObjectFit.Contain"/>
                 </MudAvatar>
                 <MudStack Justify="Justify.Center" Spacing="0">
-                    <MudText Typo="Typo.h5">@context.Title</MudText>
+                    <MudText Typo="Typo.h5">
+                        <MudLink Href="@("RecipeDetails/" + @context.Id)">@context.Title</MudLink>
+                    </MudText>
                     <MudText Typo="Typo.body2">@context.Description</MudText>
                 </MudStack>
             </MudStack>

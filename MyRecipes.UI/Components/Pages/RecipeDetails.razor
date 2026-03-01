@@ -1,0 +1,47 @@
+﻿@page "/RecipeDetails/{RecipeId:guid}"
+@inherits MvvmComponentBase<RecipeDetailsViewModel>
+
+<MudOverlay LightBackground="true" Visible="@(ViewModel.IsLoading)">
+    <MudStack AlignItems="AlignItems.Center">
+        <MudText Class="text-lg text-center" Color="Color.Primary">Loading...</MudText>
+        <MudProgressCircular Class="d-flex justify-center" Color="Color.Primary" Indeterminate="true" />
+    </MudStack>
+</MudOverlay>
+@if (ViewModel.Recipe != null)
+{
+    <div class="pa-5">
+        <MudText Typo="Typo.h4">@ViewModel.Recipe.Title</MudText>
+        <MudText Typo="Typo.body1" Style="white-space: pre-wrap">@ViewModel.Recipe.Description</MudText>
+        @if (ViewModel.Recipe.Image != null)
+        {
+            <div class="flex-0">
+                <MudImage Src="@($"data:image/png;base64,{Convert.ToBase64String(ViewModel.Recipe.Image)}")" Fluid="true" ObjectFit="ObjectFit.Cover" Alt="Recipe Image" Class="rounded" Style="max-height: 500px;" />
+            </div>
+        }
+        <MudText Typo="Typo.h6">Ingredients:</MudText>
+        <MudTable Items="@ViewModel.Recipe.Ingredients"
+                  Hover="false"
+                  ReadOnly="true"
+                  Outlined="true">
+            <ColGroup>
+                <col />
+                <col style="width: 120px;" />
+                <col style="width: 150px;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Quantity</MudTh>
+                <MudTh>Type</MudTh>
+            </HeaderContent>
+            <RowTemplate Context="ing">
+                <MudTd>@ing.Name</MudTd>
+                <MudTd>
+                    @ing.Quantity.ToString(CultureInfo.InvariantCulture)
+                </MudTd>
+                <MudTd>@ing.QuantityType.ToString()</MudTd>
+            </RowTemplate>
+        </MudTable>
+        <MudText Typo="Typo.h6">Instructions:</MudText>
+        <MudText Typo="Typo.body1" Style="white-space: pre-wrap">@ViewModel.Recipe.Instructions</MudText>
+    </div>
+}

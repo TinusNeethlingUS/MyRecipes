@@ -14,11 +14,14 @@ public partial class RecipeDialogViewModel : ViewModelBase
     private readonly IRecipeService _recipeService;
     private readonly ISnackbar _snackBar;
 
-    [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] 
+    private bool _isLoading;
 
-    [ObservableProperty] private bool _isValid;
+    [ObservableProperty] 
+    private bool _isValid;
 
-    [ObservableProperty] private Recipe _recipe = new();
+    [ObservableProperty] 
+    private Recipe _recipe = new();
 
     public RecipeDialogViewModel(IRecipeService recipeService, ISnackbar snackBar,
         ILogger<RecipeDialogViewModel> logger)
@@ -28,9 +31,11 @@ public partial class RecipeDialogViewModel : ViewModelBase
         _logger = logger;
     }
 
-    [property: ViewParameter] public IMudDialogInstance MudDialog { get; set; } = null!;
+    [property: ViewParameter] 
+    public IMudDialogInstance MudDialog { get; set; } = null!;
 
-    [property: ViewParameter] public Guid? RecipeId { get; set; }
+    [property: ViewParameter] 
+    public Guid? RecipeId { get; set; }
 
     public override async Task OnAfterRenderAsync(bool firstRender)
     {

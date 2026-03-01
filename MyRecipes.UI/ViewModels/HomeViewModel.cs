@@ -11,23 +11,28 @@ namespace MyRecipes.UI.ViewModels;
 public partial class HomeViewModel : ViewModelBase
 {
     private readonly IDialogService _dialogService;
-
     private readonly ILogger _logger;
     private readonly IRecipeService _recipeService;
+    private readonly ISnackbar _snackBar;
 
-    [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] 
+    private bool _isLoading;
 
-    [ObservableProperty] private IEnumerable<Recipe> _recipes = [];
+    [ObservableProperty] 
+    private IEnumerable<Recipe> _recipes = [];
 
-    [ObservableProperty] private string? _searchString;
+    [ObservableProperty] 
+    private string? _searchString;
 
-    [ObservableProperty] private Recipe? _selectedRecipe;
+    [ObservableProperty] 
+    private Recipe? _selectedRecipe;
 
-    public HomeViewModel(IRecipeService recipeService, IDialogService dialogService, ILogger<HomeViewModel> logger)
+    public HomeViewModel(IRecipeService recipeService, IDialogService dialogService, ILogger<HomeViewModel> logger, ISnackbar snackBar)
     {
         _recipeService = recipeService;
         _dialogService = dialogService;
         _logger = logger;
+        _snackBar = snackBar;
     }
 
     public override async Task OnAfterRenderAsync(bool firstRender)
@@ -70,6 +75,23 @@ public partial class HomeViewModel : ViewModelBase
             await _dialogService.ShowAsync<AddEditRecipeDialog>("Edit Recipe", parameters, GetDefaultDialogOptions());
         var result = await dialog.Result;
         if (result is { Canceled: false }) await RefreshAsync();
+    }
+
+    [RelayCommand]
+    public async Task DeleteRecipeAsync()
+    {
+        if (SelectedRecipe != null)
+        {
+            if (await _recipeService.DeleteRecipeAsync(SelectedRecipe.Id))
+            {
+                _snackBar.Add("Recipe deleted.", Severity.Success);
+                await RefreshAsync();
+            }
+            else
+            {
+                _snackBar.Add("Failed to delete recipe.", Severity.Error);
+            }
+        }
     }
 
     private static DialogOptions GetDefaultDialogOptions()

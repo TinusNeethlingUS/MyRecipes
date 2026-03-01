@@ -3,6 +3,10 @@
 public enum QuantityType
 {
     Count = 0,
-    Weight = 1,
-    Volume = 2
+    Milliliter = 1,
+    Gram = 2,
+    Kilogram = 3,
+    Cup = 4,
+    Teaspoon = 5,
+    Tablespoon = 6
 }
